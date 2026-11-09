@@ -19,6 +19,7 @@ import { FEATURED_SAMPLE_IDS, getItem, items } from "@/lib/items";
 import { buildEntry } from "@/lib/log";
 import { getLocality } from "@/lib/localities";
 import type { ClassifyMethod, Decision } from "@/lib/types";
+import { isStaticExport, withBasePath } from "@/lib/static-export";
 
 const VISION_KEY = "looktwice.vision.v1";
 const press =
@@ -55,7 +56,7 @@ export function ScanExperience() {
   const [cameraError, setCameraError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [modelText, setModelText] = useState<string | null>(null);
-  const [modelState, setModelState] = useState<"idle" | "checking" | "rules" | "model">("idle");
+  const [modelState, setModelState] = useState<"idle" | "checking" | "rules" | "model" | "static">("idle");
   const fileRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -93,6 +94,8 @@ export function ScanExperience() {
       : null;
 
   useEffect(() => {
+    // Static GitHub Pages build has no /api/enhance; ResultCard gets "static" below.
+    if (isStaticExport) return;
     if (!confirmedId || !decision) return;
     const item = getItem(confirmedId);
     if (!item) return;
@@ -100,7 +103,7 @@ export function ScanExperience() {
     let active = true;
     void (async () => {
       try {
-        const response = await fetch("/api/enhance", {
+        const response = await fetch(withBasePath("/api/enhance"), {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({
@@ -483,7 +486,7 @@ export function ScanExperience() {
             gramsText={gramsText}
             logged={logged}
             guidance={modelText ?? localGuidance}
-            modelState={modelState}
+            modelState={isStaticExport && decision ? "static" : modelState}
             ready={ready}
             storageError={storageError}
             onConfirm={confirm}
@@ -491,7 +494,7 @@ export function ScanExperience() {
               setDecision(next);
               setLogged(false);
               setModelText(null);
-              setModelState("checking");
+              setModelState(isStaticExport ? "static" : "checking");
             }}
             onGrams={(value) => {
               setGramsText(value);

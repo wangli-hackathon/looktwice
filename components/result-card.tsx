@@ -41,7 +41,7 @@ export function ResultCard({
   gramsText: string;
   logged: boolean;
   guidance: string | null;
-  modelState: "idle" | "checking" | "rules" | "model";
+  modelState: "idle" | "checking" | "rules" | "model" | "static";
   ready: boolean;
   storageError: string | null;
   onConfirm: (id: string, asSearch: boolean) => void;
@@ -279,7 +279,9 @@ export function ResultCard({
                   ? "Checking for a language model. The bin already comes from the rule table."
                   : modelState === "model"
                     ? "A language model rewrote the wording. The bin did not change."
-                    : "Rules wrote this. No API key required."}
+                    : modelState === "static"
+                      ? "Rules wrote this. Optional LLM enhance unavailable in static demo."
+                      : "Rules wrote this. No API key required."}
               </p>
             </div>
           ) : (

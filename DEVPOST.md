@@ -2,6 +2,10 @@
 
 Arbiter Hacks V1 · Rethinking Waste · solo student project
 
+**Live demo:** https://wangli-hackathon.github.io/looktwice/
+
+The GitHub Pages build has the core sorter, city rules, on-device log, and WARM math. The optional LLM wording rewrite needs a server deploy and is not in the static demo.
+
 ## What it does
 
 Looktwice is the pause before the bin. You type an object, pick one from a sample tray, or give it a photo. The app asks whether it should stay in use, then names the cart for the city you actually live in: San Francisco, Seattle, New York, Austin, or a conservative US baseline that assumes no organics program.
@@ -31,6 +35,6 @@ Looktwice measures impact as mass diverted from the landfill and as greenhouse-g
 - More cities, read from the same kind of primary page, with the snapshot date on the card.
 - A way to point the log at a building’s actual hauler instead of a citywide default. Apartments already diverge, and the Rules page says so.
 - A textile emission factor only if a citable one shows up. Until then the shirt stays blank.
-- The optional language-model rewrite, turned on for the demo only if a key is available. The bin will still come from the table.
+- A Node deploy of the optional language-model rewrite when a key is available. The static GitHub Pages demo keeps the rule-table wording; the bin will still come from the table either way.
 
 Built for a deadline of December 21, 2026. The rule snapshot is November 2026. Re-read the city pages before submitting.

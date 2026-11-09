@@ -67,8 +67,9 @@ Scripts:
 | `npm run dev` | Next.js dev server |
 | `npm test` | Vitest. Rules, WARM math, classifier, log, guidance. |
 | `npm run lint` | ESLint |
-| `npm run build` | Production build |
-| `npm start` | Serve the production build |
+| `npm run build` | Production Node build (includes optional `/api/enhance`) |
+| `npm run build:static` | Static export for GitHub Pages (`out/`, basePath `/looktwice`) |
+| `npm start` | Serve the production Node build |
 
 ### Optional language model
 
@@ -88,11 +89,13 @@ On the Decide page, turn on “On-device vision.” The first photo downloads Te
 
 ## Deploy
 
-Vercel is the straightforward host. Import the project, leave the framework as Next.js, and set the three `LLM_*` variables only if you want the rewrite. The demo does not need them.
+**Live static demo (GitHub Pages):** https://wangli-hackathon.github.io/looktwice/
 
-`npm run build` then `npm start` is the same app on any Node host.
+That build is produced with `npm run build:static`. It ships the sorter, city rules, on-device log, and WARM math. The optional `POST /api/enhance` LLM rewrite is not available there; the UI keeps the rule-table wording and notes that enhance needs a server deploy.
 
-Cloudflare Pages is not a one-click target for this Next.js version. The sorter, the rules, the log, and the climate math run in the browser, but the optional enhance route and Cache Components expect a Node server. Use Vercel, or a Node host, for a full deploy.
+For a full Node deploy (including optional enhance), use Vercel or any host that can run `npm run build` then `npm start`. Set the three `LLM_*` variables only if you want the rewrite. The demo does not need them.
+
+Cloudflare Pages is not a one-click target for this Next.js version when you want the enhance route and Cache Components. Use the static export above for a no-server demo, or a Node host for the full app.
 
 ## Catalog
 
@@ -109,8 +112,7 @@ Twenty-three household objects. The interesting disagreements:
 
 ## What is left before the December 21, 2026 deadline
 
-- Deploy a public URL and put it on the Devpost submission.
-- Publish the repository if this copy is not already the public one.
+- Public repo and static demo URL are up (see Deploy above). Put both on the Devpost submission.
 - Record the 2–3 minute video from `DEMO_SCRIPT.md`.
 - Re-read the four city pages before you submit. Haulers change lists.
-- Optional: a real key for the wording rewrite, and more cities.
+- Optional: a Node deploy with a real key for the wording rewrite, and more cities.
