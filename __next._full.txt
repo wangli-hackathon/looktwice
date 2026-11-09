@@ -1,0 +1,34 @@
+1:"/looktwice/_next/static/chunks/0n_fyzgx6srzn.js"
+2:"/looktwice/_next/static/chunks/13_6p84iizk3f.js"
+3:"LoadingBoundaryProvider"
+4:I[39756,["$1","$2"],"$3"]
+5:"$Sreact.fragment"
+6:I[58484,["$1","$2"],"WasteProvider"]
+7:I[48303,["$1","$2"],"SiteHeader"]
+8:I[39756,["$1","$2"],"default"]
+9:"/looktwice/_next/static/chunks/23g1zyu15o7ck.js"
+a:"/looktwice/_next/static/chunks/1ehyig7aht3lz.js"
+b:I[8821,["$1","$2","$9","$a"],"default"]
+c:I[37457,["$1","$2"],"default"]
+d:I[22016,["$1","$2"],""]
+f:"/looktwice/_next/static/chunks/3d3bqy13lt6ax.js"
+10:"/looktwice/_next/static/chunks/3mqmrkbr-0lh_.js"
+11:I[98164,["$1","$2","$f","$a","$10"],"ScanExperience"]
+12:I[97367,["$1","$2"],"OutletBoundary"]
+13:"$Sreact.suspense"
+15:"ViewportBoundary"
+16:I[97367,["$1","$2"],"$15"]
+18:"MetadataBoundary"
+19:I[97367,["$1","$2"],"$18"]
+1b:I[68027,["$1","$2"],"default",1]
+:HL["/looktwice/_next/static/chunks/30d3rwhdczbo2.css","style"]
+:HL["/looktwice/_next/static/media/916cd8a3bde3edf8-s.p.0oace-s_gkfks.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/looktwice/_next/static/media/c0680f1bdb3a2e90-s.p.1gsd1jahc5dg_.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/looktwice/_next/static/media/d6c1ff7e86974212-s.p.40sczeszzbjw1.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/looktwice/_next/static/media/edb99fec956915f8-s.p.32sris142tqlb.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+e:[["children",{"s":"__PAGE__","h":512,"d":{"r":["$","$5","c",{"children":[["$","$L11",null,{}],[["$","script","script-0",{"src":"/looktwice/_next/static/chunks/3d3bqy13lt6ax.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/looktwice/_next/static/chunks/1ehyig7aht3lz.js","async":true,"nonce":"$undefined"}],["$","script","script-2",{"src":"/looktwice/_next/static/chunks/3mqmrkbr-0lh_.js","async":true,"nonce":"$undefined"}]],["$","$L12",null,{"children":["$","$13",null,{"name":"Next.MetadataOutlet","children":"$@14"}]}]]}],"p":false,"v":null}}]]
+0:{"P":null,"c":["",""],"q":"","i":false,"t":{"t":{"s":"","h":532,"d":{"r":["$","$L4",null,{"loading":[["$","p","l",{"className":"border-2 border-ink bg-card p-4 text-sm","role":"status","children":"Opening the page…"}],[],null],"children":["$","$5","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/looktwice/_next/static/chunks/30d3rwhdczbo2.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/looktwice/_next/static/chunks/0n_fyzgx6srzn.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/looktwice/_next/static/chunks/13_6p84iizk3f.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","className":"wRojWG_variable JGOFDG_variable c6m4ra_variable h-full antialiased","children":["$","body",null,{"className":"flex min-h-full flex-col bg-background text-foreground","children":["$","$L6",null,{"children":[["$","a",null,{"href":"#content","className":"sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-50 focus:bg-card focus:px-3 focus:py-2","children":"Skip to content"}],["$","$L7",null,{}],["$","main",null,{"id":"content","className":"mx-auto w-full max-w-6xl flex-1 px-4 py-6 sm:py-8","children":["$","$L8",null,{"parallelRouterKey":"children","error":"$b","errorStyles":[],"errorScripts":[["$","script","script-0",{"src":"/looktwice/_next/static/chunks/23g1zyu15o7ck.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/looktwice/_next/static/chunks/1ehyig7aht3lz.js","async":true,"nonce":"$undefined"}]],"template":["$","$Lc",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[["$","div",null,{"className":"border-2 border-ink bg-card p-5","children":[["$","h1",null,{"className":"font-serif text-3xl","children":"That page is not in the app."}],["$","p",null,{"className":"mt-2 text-sm","children":"The decision desk is still on the front page."}],["$","$Ld",null,{"href":"/","className":"mt-4 inline-block text-sm font-medium underline","children":"Back to a decision"}]]}],[]],"forbidden":"$undefined","unauthorized":"$undefined"}]}],["$","footer",null,{"className":"border-t-2 border-ink","children":["$","p",null,{"className":"mx-auto max-w-6xl px-4 py-4 text-sm leading-6 text-muted-foreground","children":"Looktwice is a student project for Arbiter Hacks V1, track Rethinking Waste. It is decision support from a November 2026 snapshot of public rules, not an instruction from your hauler. When the cart and the app disagree, believe the cart and the city page."}]}]]}]}]}]]}]}],"p":false,"v":null},"c":"$Qe"},"h":{"r":["$","$5","h",{"children":[null,["$","$L16",null,{"children":"$L17"}],["$","$L19",null,{"children":[["$","div",null,{"hidden":true,"children":["$","$13",null,{"name":"Next.Metadata","children":"$L1a"}]}],null]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}],"p":false,"v":null}},"m":"$undefined","G":["$1b",[["$","link","0",{"rel":"stylesheet","href":"/looktwice/_next/static/chunks/30d3rwhdczbo2.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}]]],"S":true,"r":"$undefined","s":"$undefined","a":"$undefined","l":"$undefined","p":"$undefined","d":"$undefined","b":"mDmZ0XVPFMG8fVxlwzhzX"}
+17:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+1c:I[27201,["$1","$2"],"IconMark"]
+14:null
+1a:[["$","title","0",{"children":"Decide"}],["$","meta","1",{"name":"description","content":"Name an object, or give it a photo, and sort it with city rules before you log it."}],["$","link","2",{"rel":"icon","href":"/looktwice/icon.svg?icon.0kf2crwsqophj.svg","sizes":"any","type":"image/svg+xml"}],["$","$L1c","3",{}]]
