@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { HazardStripe, SafeSpaceTag } from "@/components/battery-gate";
 import { Glyph } from "@/components/glyphs";
 import { readPhoto, runVision } from "@/components/photo-tools";
 import { ResultCard } from "@/components/result-card";
@@ -14,8 +15,15 @@ import {
   searchItems,
   type ClassifyResult,
 } from "@/lib/classify";
+import {
+  defaultAnswer,
+  defaultCondition,
+  resolveGate,
+  type BatteryAnswer,
+  type BatteryCondition,
+} from "@/lib/battery";
 import { presentDecision } from "@/lib/guidance";
-import { FEATURED_SAMPLE_IDS, getItem, items } from "@/lib/items";
+import { BATTERY_SAMPLE_IDS, FEATURED_SAMPLE_IDS, getItem, items } from "@/lib/items";
 import { buildEntry } from "@/lib/log";
 import { getLocality } from "@/lib/localities";
 import type { ClassifyMethod, Decision } from "@/lib/types";
@@ -51,6 +59,8 @@ export function ScanExperience() {
   const [gramsText, setGramsText] = useState("0");
   const [logged, setLogged] = useState(false);
   const [showAll, setShowAll] = useState(false);
+  const [batteryAnswer, setBatteryAnswer] = useState<BatteryAnswer | null>(null);
+  const [batteryCondition, setBatteryCondition] = useState<BatteryCondition>("normal");
   const visionOn = useSyncExternalStore(subscribeVision, visionSnapshot, () => "off") === "on";
   const [cameraOn, setCameraOn] = useState(false);
   const [cameraError, setCameraError] = useState<string | null>(null);
@@ -90,8 +100,10 @@ export function ScanExperience() {
   const gramsValid = Number.isFinite(grams) && grams > 0 && grams <= 50000;
   const localGuidance =
     confirmedId && decision && gramsValid
-      ? presentDecision(confirmedId, localityId, decision, grams / 1000)?.guidance ?? null
+      ? presentDecision(confirmedId, localityId, decision, grams / 1000, batteryAnswer)?.guidance ?? null
       : null;
+  const confirmedItem = confirmedId ? getItem(confirmedId) : undefined;
+  const batteryItem = Boolean(confirmedItem?.battery);
 
   useEffect(() => {
     // Static GitHub Pages build has no /api/enhance; ResultCard gets "static" below.
@@ -99,6 +111,8 @@ export function ScanExperience() {
     if (!confirmedId || !decision) return;
     const item = getItem(confirmedId);
     if (!item) return;
+    // Battery guidance is safety text. It is never sent to a model.
+    if (item.battery) return;
     const controller = new AbortController();
     let active = true;
     void (async () => {
@@ -139,6 +153,12 @@ export function ScanExperience() {
     };
   }, [confirmedId, decision, localityId]);
 
+  function resetBattery(id: string | null) {
+    const item = id ? getItem(id) : undefined;
+    setBatteryAnswer(item ? defaultAnswer(item) : null);
+    setBatteryCondition(item ? defaultCondition(item) : "normal");
+  }
+
   function rememberPreview(next: string | null) {
     if (previewRef.current && previewRef.current !== next) {
       URL.revokeObjectURL(previewRef.current);
@@ -155,9 +175,11 @@ export function ScanExperience() {
     if (result.itemId && !needsConfirmation(result)) {
       const item = getItem(result.itemId);
       setConfirmedId(result.itemId);
+      resetBattery(result.itemId);
       if (item) setGramsText(String(Math.round(item.weightKg * 1000)));
     } else {
       setConfirmedId(null);
+      resetBattery(null);
     }
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     requestAnimationFrame(() => {
@@ -168,6 +190,7 @@ export function ScanExperience() {
   function confirm(id: string, asSearch: boolean) {
     const item = getItem(id);
     setConfirmedId(id);
+    resetBattery(id);
     setMethodOverride(asSearch ? "search" : null);
     setDecision(null);
     setLogged(false);
@@ -264,7 +287,7 @@ export function ScanExperience() {
     if (!result.itemId) {
       setStage({
         status: "error",
-        message: "Nothing in the catalog matches that. Try pizza box, alkaline battery, or a sample.",
+        message: "Nothing in the catalog matches that. Try pizza box, power bank, or a sample. If it lights up, talks, or charges, treat it as a battery.",
       });
       return;
     }
@@ -273,7 +296,10 @@ export function ScanExperience() {
 
   function logDecision() {
     if (stage.status !== "ready" || !confirmedId || !decision || !gramsValid || !ready) return;
+    const item = getItem(confirmedId);
+    const battery = item ? resolveGate(item, localityId, batteryAnswer).hasBattery : false;
     const entry = buildEntry({
+      battery,
       id: crypto.randomUUID(),
       at: new Date().toISOString(),
       itemId: confirmedId,
@@ -311,7 +337,7 @@ export function ScanExperience() {
               id="object"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="pizza box, banana, alkaline battery"
+              placeholder="pizza box, disposable vape, light-up sneakers"
               className="h-11 border-2 border-ink bg-card text-base"
               autoComplete="off"
             />
@@ -415,6 +441,48 @@ export function ScanExperience() {
           </label>
         </div>
 
+        <section
+          aria-labelledby="battery-tray-title"
+          className="mt-6 border-2 border-ink bg-card shadow-[4px_4px_0_0_#1b1712]"
+          data-testid="battery-tray"
+        >
+          <HazardStripe />
+          <div className="p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <h2 id="battery-tray-title" className="font-serif text-2xl">
+                Battery fire check
+              </h2>
+              <SafeSpaceTag />
+            </div>
+            <p className="mt-1 text-sm leading-6">
+              Hidden batteries start fires in garbage trucks and sorting plants. Anything that might hold
+              one gets asked first, and “Not sure” counts as yes.
+            </p>
+            <ul className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-3">
+              {BATTERY_SAMPLE_IDS.map((id) => {
+                const item = getItem(id);
+                if (!item) return null;
+                const selected = confirmedId === id || readyResult?.itemId === id;
+                return (
+                  <li key={id}>
+                    <button
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => applyResult(classify({ sampleItemId: id }), null)}
+                      className={`flex h-full w-full items-center gap-2 border-2 border-ink p-2 text-left ${
+                        selected ? "bg-ink text-card" : "bg-background hover:bg-paper"
+                      }`}
+                    >
+                      <Glyph id={id} />
+                      <span className="text-sm font-medium">{item.name}</span>
+                    </button>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </section>
+
         <div className="mt-6">
           <div className="flex items-baseline justify-between gap-3">
             <h2 className="font-serif text-2xl">Sample tray</h2>
@@ -486,7 +554,15 @@ export function ScanExperience() {
             gramsText={gramsText}
             logged={logged}
             guidance={modelText ?? localGuidance}
-            modelState={isStaticExport && decision ? "static" : modelState}
+            modelState={batteryItem && decision ? "rules" : isStaticExport && decision ? "static" : modelState}
+            batteryAnswer={batteryAnswer}
+            batteryCondition={batteryCondition}
+            onBatteryAnswer={(next) => {
+              setBatteryAnswer(next);
+              setDecision(null);
+              setLogged(false);
+            }}
+            onBatteryCondition={setBatteryCondition}
             ready={ready}
             storageError={storageError}
             onConfirm={confirm}
@@ -494,7 +570,7 @@ export function ScanExperience() {
               setDecision(next);
               setLogged(false);
               setModelText(null);
-              setModelState(isStaticExport ? "static" : "checking");
+              setModelState(batteryItem ? "rules" : isStaticExport ? "static" : "checking");
             }}
             onGrams={(value) => {
               setGramsText(value);

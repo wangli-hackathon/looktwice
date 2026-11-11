@@ -87,6 +87,31 @@ LLM_MODEL=gpt-4o-mini
 
 On the Decide page, turn on “On-device vision.” The first photo downloads TensorFlow.js and MobileNet (about 16 MB) from jsDelivr, then classifies in the browser. If that download fails, the file name and the color guess still run.
 
+## Battery fire check (added during SafeSpace Hacks, November 2026)
+
+> **Built during SafeSpace Hacks (Oct 17 – Nov 22, 2026).** Everything in this section was added on 2026-11-11 and later. The sorter, city tables, log, and WARM math above came first (first commit 2026-11-04).
+
+Lithium batteries hidden inside everyday objects get crushed in garbage trucks and sorting plants and start fires. EPA found 245 such fires at 64 waste facilities from 2013 to 2020 and says that count is incomplete ([EPA 530-R-21-002](https://www.epa.gov/system/files/documents/2021-08/lithium-ion-battery-report-update-7.01_508.pdf)). The Battery fire check is a gate that runs **before** any bin rule:
+
+- **"Does it have a battery?"** Objects that might hide one (shoes with lights, a greeting card that plays music) ask first. **Yes** or **Not sure** sends the object to a battery drop-off in every city. Only an explicit **No battery** lets the ordinary rule run.
+- **Built-in batteries skip the question.** Power banks, disposable and rechargeable vapes, wireless earbuds, light-up toys, phones, loose lithium cells, and "gadget with a battery" are drop-off only, everywhere. "No" is ignored for them.
+- **Battery words are trusted over a weak match.** Typing "rechargeable", "bluetooth", "wireless", "light up", "usb", "vape"… sends an unknown object to the battery path instead of guessing a cart.
+- **Swollen or hot path.** "Any warning signs?" → *It's swollen or hot* shows a static stop-handling card: stop using and charging it, move it away from anything that can catch fire if that is safe, no cart, ask the maker for handling instructions (EPA), and call 911 if it is smoking or on fire. In New York it quotes FDNY/NYC311: call 911 for a battery that changes shape or color, leaks, smells, or makes odd noises. Looktwice is not an emergency service.
+- **Counted separately.** The log has its own **Batteries kept out of carts** number. Batteries have no WARM row, so no CO2e is claimed. Logging a battery into a cart anyway is recorded and shown too.
+- **No model rewrites it.** Battery guidance is never sent to the optional language model.
+
+Prep steps (tape the terminals, bag each one alone, don't crush it, keep a swollen cell away from paper) come from [EPA, Used Lithium-Ion Batteries](https://www.epa.gov/recycle/used-lithium-ion-batteries). City lines restate the battery pages already cited for San Francisco, Seattle, New York, and Austin.
+
+| New object | Every city |
+| --- | --- |
+| Power bank, disposable vape, rechargeable e-cigarette, wireless earbuds, light-up or talking toy, gadget with a battery, swollen phone or battery | Battery drop-off (built-in battery) |
+| Shoes with lights | Battery drop-off unless you answer **No battery** (then textile donation) |
+| Greeting card with sound | Battery drop-off unless you answer **No battery** (then paper recycling) |
+
+Code: `lib/battery.ts` (gate, stop card, sources), `lib/battery-items.ts` (catalog), `components/battery-gate.tsx` (UI), `tests/battery.test.ts`. The tests assert that every battery-bearing item resolves to a drop-off in every locality for every answer, that the classifier never sends a battery-bearing object to trash, recycling, or compost, and that a model is never called for battery guidance.
+
+Try it: https://wangli-hackathon.github.io/looktwice/ → type **disposable vape**, or open **Swollen phone or battery** from the Battery fire check tray.
+
 ## Deploy
 
 **Live static demo (GitHub Pages):** https://wangli-hackathon.github.io/looktwice/
@@ -99,7 +124,7 @@ Cloudflare Pages is not a one-click target for this Next.js version when you wan
 
 ## Catalog
 
-Twenty-three household objects. The interesting disagreements:
+Thirty-two household objects (nine added for the Battery fire check). The interesting disagreements:
 
 | Object | San Francisco | Seattle | New York | Austin | Baseline |
 | --- | --- | --- | --- | --- | --- |

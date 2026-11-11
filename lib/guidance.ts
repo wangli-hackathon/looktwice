@@ -1,3 +1,4 @@
+import { resolveGate, type BatteryAnswer } from "@/lib/battery";
 import { getLocality } from "@/lib/localities";
 import { climateFor, milesEquivalent, type ClimateResult } from "@/lib/impact";
 import { getItem, type Item } from "@/lib/items";
@@ -41,11 +42,13 @@ export function presentDecision(
   localityId: string,
   decision: Decision,
   weightKg: number,
+  batteryAnswer?: BatteryAnswer | null,
 ): Presentation | null {
   const item = getItem(itemId);
   const locality = getLocality(localityId);
   if (!item || !locality) return null;
-  const rule = item.rules[locality.id];
+  // Battery fire check: the gate decides the rule before anything else does.
+  const rule = resolveGate(item, locality.id, batteryAnswer).rule;
   const climate = climateFor(item, decision, weightKg);
   return {
     item,
@@ -155,6 +158,16 @@ export async function enhanceGuidance(
   }
 
   const local = presentation.guidance;
+  // Battery guidance is safety guidance. A model never rewrites it.
+  if (presentation.item.battery) {
+    return {
+      enhanced: false,
+      guidance: local,
+      stream: presentation.rule.stream,
+      decision: input.decision,
+      notice: "battery_rules_only",
+    };
+  }
   const key = options.apiKey?.trim();
   if (!key) {
     return {

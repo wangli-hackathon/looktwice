@@ -64,6 +64,76 @@ export function Glyph({ id }: { id: string }) {
           <circle cx="32" cy="48" r="2" fill="#e7dcc4" />
         </svg>
       );
+    case "power-bank":
+      return (
+        <svg {...common}>
+          <rect x="16" y="10" width="32" height="44" rx="5" fill="#1e4d7b" stroke="#1b1712" strokeWidth="2" />
+          <rect x="27" y="6" width="10" height="4" fill="#1b1712" />
+          <path d="M34 20l-6 12h8l-6 12" stroke="#f2b705" strokeWidth="3" fill="none" strokeLinejoin="round" />
+        </svg>
+      );
+    case "disposable-vape":
+    case "e-cigarette":
+      return (
+        <svg {...common}>
+          <rect x="24" y="14" width="16" height="42" rx="4" fill="#f6f0e4" stroke="#1b1712" strokeWidth="2" />
+          <path d="M28 14V8h8v6" fill="#1b1712" stroke="#1b1712" strokeWidth="2" />
+          <rect x="28" y="30" width="8" height="16" fill="#9a3412" stroke="#1b1712" strokeWidth="1.5" />
+          <circle cx="32" cy="51" r="1.5" fill="#1b1712" />
+        </svg>
+      );
+    case "wireless-earbuds":
+      return (
+        <svg {...common}>
+          <rect x="14" y="30" width="36" height="24" rx="10" fill="#f6f0e4" stroke="#1b1712" strokeWidth="2" />
+          <path d="M22 10a6 6 0 0 1 6 6v10h-6z" fill="#f6f0e4" stroke="#1b1712" strokeWidth="2" />
+          <path d="M42 10a6 6 0 0 0-6 6v10h6z" fill="#f6f0e4" stroke="#1b1712" strokeWidth="2" />
+          <circle cx="32" cy="42" r="2" fill="#3f6212" />
+        </svg>
+      );
+    case "light-up-toy":
+      return (
+        <svg {...common}>
+          <circle cx="32" cy="36" r="16" fill="#f2b705" stroke="#1b1712" strokeWidth="2" />
+          <circle cx="26" cy="33" r="2" fill="#1b1712" />
+          <circle cx="38" cy="33" r="2" fill="#1b1712" />
+          <path d="M25 41c4 4 10 4 14 0" stroke="#1b1712" strokeWidth="2" fill="none" />
+          <path d="M32 8v8M14 14l5 5M50 14l-5 5" stroke="#9a3412" strokeWidth="3" />
+        </svg>
+      );
+    case "light-up-shoes":
+      return (
+        <svg {...common}>
+          <path d="M8 38c8 0 14-6 18-14l8 2c2 6 10 8 22 10v10H8z" fill="#f6f0e4" stroke="#1b1712" strokeWidth="2" />
+          <path d="M8 46h48" stroke="#1b1712" strokeWidth="2" />
+          <circle cx="16" cy="51" r="2.5" fill="#f2b705" stroke="#1b1712" />
+          <circle cx="32" cy="51" r="2.5" fill="#c2410c" stroke="#1b1712" />
+          <circle cx="48" cy="51" r="2.5" fill="#3f6212" stroke="#1b1712" />
+        </svg>
+      );
+    case "musical-greeting-card":
+      return (
+        <svg {...common}>
+          <path d="M10 14h22v38H10zM32 14l22 6v38l-22-6z" fill="#f6f0e4" stroke="#1b1712" strokeWidth="2" />
+          <path d="M40 30v14a3 3 0 1 1-2-3V28l8-2v12a3 3 0 1 1-2-3v-8z" fill="#9a3412" />
+        </svg>
+      );
+    case "battery-gadget":
+      return (
+        <svg {...common}>
+          <rect x="12" y="18" width="40" height="28" rx="6" fill="#44403c" stroke="#1b1712" strokeWidth="2" />
+          <circle cx="24" cy="32" r="7" fill="#e7dcc4" stroke="#1b1712" strokeWidth="2" />
+          <circle cx="42" cy="32" r="4" fill="#f2b705" stroke="#1b1712" strokeWidth="2" />
+        </svg>
+      );
+    case "swollen-battery":
+      return (
+        <svg {...common}>
+          <path d="M18 10h28c4 8 4 36 0 44H18c-4-8-4-36 0-44z" fill="#fde2e2" stroke="#b91c1c" strokeWidth="3" />
+          <path d="M32 20v14" stroke="#b91c1c" strokeWidth="4" strokeLinecap="round" />
+          <circle cx="32" cy="42" r="2.5" fill="#b91c1c" />
+        </svg>
+      );
     case "alkaline-battery":
     case "lithium-battery":
       return (

@@ -46,9 +46,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </main>
           <footer className="border-t-2 border-ink">
             <p className="mx-auto max-w-6xl px-4 py-4 text-sm leading-6 text-muted-foreground">
-              Looktwice is a student project for Arbiter Hacks V1, track Rethinking Waste. It is
+              Looktwice is a student project for Arbiter Hacks V1, track Rethinking Waste. The Battery
+              fire check was added during SafeSpace Hacks (November 2026). It is
               decision support from a November 2026 snapshot of public rules, not an instruction from
-              your hauler. When the cart and the app disagree, believe the cart and the city page.
+              your hauler. When the cart and the app disagree, believe the cart and the city page. It
+              is not an emergency service: if a battery is smoking or on fire, call 911.
             </p>
           </footer>
         </WasteProvider>

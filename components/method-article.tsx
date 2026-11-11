@@ -1,3 +1,5 @@
+import { SafeSpaceTag } from "@/components/battery-gate";
+import { BATTERY_SOURCES } from "@/lib/battery";
 import { IMPACT_PARAGRAPH } from "@/lib/copy";
 import {
   EQUIVALENCY_SOURCE,
@@ -123,6 +125,58 @@ export function MethodArticle() {
         and newer cans are often lighter. Food includes water because WARM’s food factors are per wet
         short ton. The stored entry keeps the grams you confirmed.
       </p>
+
+      <section id="battery-fire-check" className="mt-8 scroll-mt-24 border-2 border-ink bg-card p-4">
+        <SafeSpaceTag />
+        <h2 className="mt-2 font-serif text-2xl">Battery fire check</h2>
+        <p className="mt-3 text-sm leading-6">
+          Added for SafeSpace Hacks. Any object that might hide a battery (a vape, a power bank,
+          earbuds, a toy that lights up, a card that plays music, shoes with lights) is asked “Does
+          it have a battery?” before any bin rule runs.
+        </p>
+        <ul className="mt-3 list-disc space-y-2 pl-5 text-sm leading-6">
+          <li>
+            <span className="font-medium">Yes or Not sure:</span> a battery drop-off, in every city.
+            No other rule can override it. Only an explicit “No battery” lets the ordinary rule run.
+          </li>
+          <li>
+            <span className="font-medium">Built-in batteries</span> (phones, power banks, vapes, earbuds)
+            skip the question. The answer is always a drop-off.
+          </li>
+          <li>
+            <span className="font-medium">Swollen or hot:</span> a static stop-handling card restated
+            from FDNY/NYC311 and EPA guidance, with the emergency line. It is not an emergency service.
+          </li>
+          <li>
+            <span className="font-medium">Counted separately:</span> the log shows batteries kept out
+            of carts as their own number. They have no WARM row, so no CO2e is claimed for them.
+          </li>
+          <li>
+            <span className="font-medium">No model rewrites it:</span> battery guidance is never sent
+            to the optional language model.
+          </li>
+          <li>
+            <span className="font-medium">Words that mean a battery</span> (“rechargeable”,
+            “bluetooth”, “light up”, “wireless”…) route an unknown object to the battery path instead
+            of a cart.
+          </li>
+        </ul>
+        <p className="mt-3 text-sm leading-6">
+          Why: EPA documented 245 fires at 64 waste facilities from 2013 to 2020 caused, or likely
+          caused, by lithium batteries, and says the real number is higher. EPA tells consumers to
+          keep lithium-ion batteries and the devices that contain them out of household garbage and
+          recycling bins, and to tape terminals or bag each battery.
+        </p>
+        <ul className="mt-3 space-y-1 text-sm">
+          {BATTERY_SOURCES.map((source) => (
+            <li key={source.url}>
+              <a className="underline" href={source.url}>
+                {source.label}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
 
       <h2 className="mt-8 font-serif text-2xl">What this is not</h2>
       <p className="mt-3 text-sm leading-6">

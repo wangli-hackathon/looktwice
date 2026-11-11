@@ -1,3 +1,4 @@
+import { isCartDecision } from "@/lib/battery";
 import { climateFor } from "@/lib/impact";
 import { getItem } from "@/lib/items";
 import { getLocality } from "@/lib/localities";
@@ -20,6 +21,8 @@ export interface LogEntry {
   column: string;
   shortBasis: string;
   method: string;
+  /** Battery fire check: true when the object was treated as carrying a battery. */
+  battery?: boolean;
 }
 
 export interface LogSummary {
@@ -32,6 +35,10 @@ export interface LogSummary {
   unestimatedDivertedKg: number;
   unestimatedLandfillKg: number;
   byDecision: Record<Decision, { count: number; kg: number }>;
+  /** Battery-bearing objects that went to a drop-off or stayed in use. */
+  batteriesKeptOut: number;
+  /** Battery-bearing objects that were logged into a cart anyway. */
+  batteriesInCarts: number;
 }
 
 const DECISIONS: Decision[] = ["reuse", "recycle", "compost", "landfill", "special"];
@@ -54,12 +61,14 @@ export function buildEntry(input: {
   decision: Decision;
   weightKg: number;
   method: string;
+  battery?: boolean;
 }): LogEntry | null {
   const item = getItem(input.itemId);
   const locality = getLocality(input.localityId);
   if (!item || !locality) return null;
   if (!Number.isFinite(input.weightKg) || input.weightKg <= 0) return null;
   const climate = climateFor(item, input.decision, input.weightKg);
+  const battery = input.battery ?? item.battery === "built-in";
   return {
     id: input.id,
     at: input.at,
@@ -74,6 +83,7 @@ export function buildEntry(input: {
     column: climate.column,
     shortBasis: climate.shortBasis,
     method: input.method,
+    ...(battery ? { battery: true } : {}),
   };
 }
 
@@ -88,9 +98,15 @@ export function summarize(entries: LogEntry[]): LogSummary {
     unestimatedDivertedKg: 0,
     unestimatedLandfillKg: 0,
     byDecision: emptyByDecision(),
+    batteriesKeptOut: 0,
+    batteriesInCarts: 0,
   };
 
   for (const entry of entries) {
+    if (entry.battery) {
+      if (isCartDecision(entry.decision)) summary.batteriesInCarts += 1;
+      else summary.batteriesKeptOut += 1;
+    }
     const bucket = summary.byDecision[entry.decision];
     bucket.count += 1;
     bucket.kg += entry.weightKg;
@@ -205,7 +221,8 @@ export function isLogEntry(value: unknown): value is LogEntry {
     (row.factorId === null || typeof row.factorId === "string") &&
     typeof row.column === "string" &&
     typeof row.shortBasis === "string" &&
-    typeof row.method === "string"
+    typeof row.method === "string" &&
+    (row.battery === undefined || typeof row.battery === "boolean")
   );
 }
 

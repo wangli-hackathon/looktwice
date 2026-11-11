@@ -4,8 +4,10 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { BatteryGate } from "@/components/battery-gate";
 import { Glyph } from "@/components/glyphs";
 import { StreamBadge } from "@/components/stream-badge";
+import { resolveGate, type BatteryAnswer, type BatteryCondition } from "@/lib/battery";
 import { METHOD_LABEL, type ClassifyResult } from "@/lib/classify";
 import { formatCo2eMagnitude, formatDelta, formatMiles, DECISION_LABEL } from "@/lib/format";
 import { climateFor, milesEquivalent } from "@/lib/impact";
@@ -32,6 +34,10 @@ export function ResultCard({
   onDecision,
   onGrams,
   onLog,
+  batteryAnswer,
+  batteryCondition,
+  onBatteryAnswer,
+  onBatteryCondition,
 }: {
   localityId: string;
   result: ClassifyResult;
@@ -48,6 +54,10 @@ export function ResultCard({
   onDecision: (decision: Decision) => void;
   onGrams: (value: string) => void;
   onLog: () => void;
+  batteryAnswer: BatteryAnswer | null;
+  batteryCondition: BatteryCondition;
+  onBatteryAnswer: (answer: BatteryAnswer) => void;
+  onBatteryCondition: (condition: BatteryCondition) => void;
 }) {
   const locality = getLocality(localityId);
   const guessed = result.itemId ? getItem(result.itemId) : undefined;
@@ -56,7 +66,10 @@ export function ResultCard({
   const gramsValid = Number.isFinite(grams) && grams > 0 && grams <= 50000;
   const weightKg = gramsValid ? grams / 1000 : item?.weightKg ?? 0;
 
-  const rule = item && locality ? item.rules[locality.id] : null;
+  // Battery fire check: the gate picks the rule before the bin does.
+  const gate = item && locality ? resolveGate(item, locality.id, batteryAnswer) : null;
+  const rule = gate?.rule ?? null;
+  const hasBattery = Boolean(gate?.hasBattery);
   const activeDecision = decision ?? rule?.stream ?? null;
   const climate =
     item && activeDecision && gramsValid ? climateFor(item, activeDecision, weightKg) : null;
@@ -140,6 +153,18 @@ export function ResultCard({
             </div>
           </div>
 
+          {item.battery && gate ? (
+            <BatteryGate
+              item={item}
+              localityId={locality.id}
+              answer={batteryAnswer}
+              condition={batteryCondition}
+              gate={gate}
+              onAnswer={onBatteryAnswer}
+              onCondition={onBatteryCondition}
+            />
+          ) : null}
+
           <section className="mt-5 border-2 border-ink bg-background p-4">
             <p className="font-mono text-xs uppercase tracking-wide text-primary">Before a bin</p>
             <h3 className="mt-1 font-serif text-2xl">
@@ -182,7 +207,7 @@ export function ResultCard({
           <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Button
               type="button"
-              variant={item.reuse.level === "low" ? "outline" : "default"}
+              variant={item.reuse.level === "low" || hasBattery ? "outline" : "default"}
               aria-pressed={decision === "reuse"}
               className={press}
               onClick={() => onDecision("reuse")}
@@ -191,7 +216,7 @@ export function ResultCard({
             </Button>
             <Button
               type="button"
-              variant={item.reuse.level === "low" ? "default" : "outline"}
+              variant={item.reuse.level === "low" || hasBattery ? "default" : "outline"}
               aria-pressed={decision === rule.stream}
               className={press}
               onClick={() => onDecision(rule.stream)}
@@ -208,7 +233,7 @@ export function ResultCard({
                 className={press}
                 onClick={() => onDecision("landfill")}
               >
-                Trash it anyway
+                {hasBattery ? "It went in a cart anyway" : "Trash it anyway"}
               </Button>
             ) : null}
           </div>
@@ -301,7 +326,9 @@ export function ResultCard({
             </Button>
             {logged ? (
               <Link href="/log" className="text-sm font-medium underline">
-                Saved on this device. Open the log.
+                {hasBattery && decision && decision !== "landfill"
+                  ? "Saved. One more battery kept out of a cart. Open the log."
+                  : "Saved on this device. Open the log."}
               </Link>
             ) : null}
           </div>

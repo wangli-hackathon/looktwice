@@ -1,3 +1,4 @@
+import { makeBatteryItems, type BatteryKind } from "@/lib/battery-items";
 import type { CityRule, LocalityId, PixelFamily } from "@/lib/types";
 
 /**
@@ -24,6 +25,12 @@ export interface Item {
   reuseColumn: "source-reduction" | "none";
   specialColumn: "recycling" | "none";
   climateCaveat?: string;
+  /**
+   * Battery fire check (SafeSpace Hacks, Nov 2026).
+   * "built-in": always has a cell, so the answer is a drop-off in every city.
+   * "maybe": ask "Does it have a battery?" — Yes or Unsure overrides every other rule.
+   */
+  battery?: BatteryKind;
   rules: Record<LocalityId, CityRule>;
 }
 
@@ -63,7 +70,7 @@ const baseTrash =
 const baseDrop =
   "A drop-off you confirm locally. Do not put it in a recycling cart just in case.";
 
-export const items: Item[] = [
+const baseItems: Item[] = [
   {
     id: "produce",
     name: "Fruit or vegetable",
@@ -573,6 +580,7 @@ export const items: Item[] = [
   {
     id: "phone",
     name: "Phone or laptop",
+    battery: "built-in",
     aliases: ["phone", "iphone", "laptop", "computer", "tablet", "electronic", "e-waste"],
     families: ["dark"],
     materialId: "mixed-electronics",
@@ -1162,6 +1170,7 @@ export const items: Item[] = [
   {
     id: "lithium-battery",
     name: "Lithium or rechargeable battery",
+    battery: "built-in",
     aliases: ["lithium", "lithium-ion", "rechargeable battery", "li-ion", "lithium battery"],
     families: [],
     materialId: "none",
@@ -1335,6 +1344,17 @@ export const items: Item[] = [
   },
 ];
 
+const BASE_BY_ID = new Map(baseItems.map((item) => [item.id, item]));
+
+export const items: Item[] = [
+  ...baseItems,
+  ...makeBatteryItems((id) => {
+    const item = BASE_BY_ID.get(id);
+    if (!item) throw new Error(`Unknown base item: ${id}`);
+    return item;
+  }),
+];
+
 const BY_ID = new Map(items.map((item) => [item.id, item]));
 
 export function getItem(id: string): Item | undefined {
@@ -1356,6 +1376,16 @@ export const FEATURED_SAMPLE_IDS = [
   "plastic-film",
   "textile",
   "phone",
+] as const;
+
+/** Sample tray for the Battery fire check (SafeSpace Hacks, Nov 2026). */
+export const BATTERY_SAMPLE_IDS = [
+  "power-bank",
+  "disposable-vape",
+  "wireless-earbuds",
+  "light-up-shoes",
+  "musical-greeting-card",
+  "swollen-battery",
 ] as const;
 
 export function resolveRule(itemId: string, localityId: string) {

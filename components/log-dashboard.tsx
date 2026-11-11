@@ -11,6 +11,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { HazardStripe, SafeSpaceTag } from "@/components/battery-gate";
 import { StreamBadge } from "@/components/stream-badge";
 import { useWaste } from "@/components/waste-provider";
 import { formatDelta, formatMassKg, formatMiles, DECISION_LABEL } from "@/lib/format";
@@ -120,6 +121,35 @@ export function LogDashboard() {
             </p>
           ) : null}
 
+          <section
+            aria-labelledby="battery-count-title"
+            className="mt-4 border-2 border-ink bg-card"
+            data-testid="battery-counter"
+          >
+            <HazardStripe />
+            <div className="grid gap-3 p-4 sm:grid-cols-[auto_1fr] sm:items-center">
+              <div className="border-2 border-ink bg-special px-4 py-3 text-white">
+                <p className="font-mono text-xs uppercase tracking-wide">Batteries kept out of carts</p>
+                <p className="mt-1 font-serif text-5xl leading-none" id="battery-count-title">
+                  {summary.batteriesKeptOut}
+                </p>
+              </div>
+              <div>
+                <SafeSpaceTag />
+                <p className="mt-2 text-sm leading-6">
+                  Counted on its own, not as kilograms or CO2e. Each one is an ignition source that did
+                  not ride in a garbage truck or a recycling sorter.
+                </p>
+                {summary.batteriesInCarts > 0 ? (
+                  <p className="mt-1 text-sm font-medium text-special">
+                    {summary.batteriesInCarts} battery-bearing{" "}
+                    {summary.batteriesInCarts === 1 ? "object was" : "objects were"} logged into a cart.
+                  </p>
+                ) : null}
+              </div>
+            </div>
+          </section>
+
           <div className="mt-6 border-2 border-ink bg-card p-4">
             <h2 className="font-serif text-2xl">By path</h2>
             <ul className="mt-3 space-y-3">
@@ -219,6 +249,11 @@ function LogRow({ entry, onRemove }: { entry: LogEntry; onRemove: () => void }) 
         <div className="flex flex-wrap items-center gap-2">
           <p className="font-medium">{entry.itemName}</p>
           <StreamBadge decision={entry.decision} />
+          {entry.battery ? (
+            <span className="border-2 border-ink bg-[#f2b705] px-1.5 py-0.5 font-mono text-[11px] uppercase">
+              Battery
+            </span>
+          ) : null}
         </div>
         <p className="mt-1 text-sm text-muted-foreground">
           {entry.localityName} · {formatMassKg(entry.weightKg)} · {when}

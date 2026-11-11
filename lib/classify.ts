@@ -301,6 +301,54 @@ function uniqAlternates(rows: ClassifyAlternate[], primary: string | null): Clas
   return result;
 }
 
+/**
+ * Battery fire check (SafeSpace Hacks, Nov 2026): words that usually mean a
+ * hidden battery. When one appears, an ordinary match is not trusted.
+ */
+const BATTERY_HINTS = [
+  "light up",
+  "lights up",
+  "led",
+  "rechargeable",
+  "cordless",
+  "bluetooth",
+  "wireless",
+  "usb",
+  "talking",
+  "musical",
+  "singing",
+  "vape",
+  "charging",
+  "battery powered",
+  "battery operated",
+  "lithium",
+];
+
+export function batteryHint(text: string | null | undefined): string | null {
+  if (!text) return null;
+  const q = ` ${normalizeText(text)} `;
+  return BATTERY_HINTS.find((hint) => q.includes(` ${hint} `)) ?? null;
+}
+
+function batteryHintResult(
+  hint: string,
+  hits: ClassifyAlternate[],
+): ClassifyResult | null {
+  const top = hits[0] ? getItem(hits[0].itemId) : undefined;
+  // A confident match to a battery item, or an exact name, already answers it.
+  if (top?.battery && (hits[0]?.score ?? 0) >= 0.8) return null;
+  if (hits[0] && hits[0].score >= 1) return null;
+  return {
+    itemId: "battery-gadget",
+    method: "search",
+    confidence: 0.85,
+    alternates: uniqAlternates(hits, "battery-gadget"),
+    notes: [
+      `Your words include “${hint}”, which usually means a battery inside. Treated as a battery until you say otherwise.`,
+    ],
+  };
+}
+
 export function classify(input: ClassifyInput): ClassifyResult {
   if (input.sampleItemId && getItem(input.sampleItemId)) {
     return {
@@ -328,6 +376,12 @@ export function classify(input: ClassifyInput): ClassifyResult {
   const fileHits = fileQuery ? searchItems(fileQuery, 4) : [];
   const visionHit = bestVision(input.vision);
   const pixel = input.pixels ? heuristicFromSummary(input.pixels) : null;
+
+  const hint = batteryHint(input.query);
+  if (hint) {
+    const hinted = batteryHintResult(hint, queryHits);
+    if (hinted) return hinted;
+  }
 
   if (queryHits[0] && queryHits[0].score >= 0.8) {
     return {
